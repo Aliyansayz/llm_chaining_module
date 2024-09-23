@@ -5,7 +5,8 @@ chaining_prompt_when_pipeline_run without using Library
 
 prompt = "Generate movies similar to {movie} "
 llm = "whatever"
-pipeline = QueryPipeline(chain=[prompt, llm])
+prompt_tmpl = PromptTemplate(prompt)
+pipeline = QueryPipeline(chain=[prompt_tmpl, llm])
 response = pipeline.run(movie= "World War Z") # Just at the time of running pipeline we chain our data
 
 print(response)
@@ -14,31 +15,23 @@ print(response)
 
 
 
-class PromptTemplate : 
-
-    def __init__(self, prompt):
-        self.prompt = prompt
 
 
-    def prompt_chaining(self, prompt, **kwargs ):
-        for key, value in kwargs.items():
-            # print(f"{key}: {value}")
-            if f"{key}" not in prompt:
-                raise KeyError( f"{key} is not valid argument to pass in prompt template" )
 
-        formatted_string = prompt.format(**kwargs)
-
-        print(formatted_string)
-        return formatted_string
-
-
-class QueryPipeline(PromptTemplate):
+class QueryPipeline:
 
     pass
     def __init__(self, chain: list):
-        if len(chain) == 2:
-            self.prompt = chain[0]
-            self.llm = chain[1]
+
+        self.prompt = ""
+        
+        for element in chain:
+
+            if isinstance(element, PromptTemplate): self.prompt = element
+
+            elif isinstance(element, LLMtype): self.llm = element
+
+        
         else:
             raise TypeError("Type is invalid")
 
@@ -61,3 +54,23 @@ class QueryPipeline(PromptTemplate):
 
     pass
 
+
+
+
+
+class PromptTemplate(QueryPipeline) : 
+
+    def __init__(self, prompt):
+        self.prompt = prompt
+
+
+    def prompt_chaining(self, prompt, **kwargs ):
+        for key, value in kwargs.items():
+            # print(f"{key}: {value}")
+            if f"{key}" not in prompt:
+                raise KeyError( f"{key} is not valid argument to pass in prompt template" )
+
+        formatted_string = prompt.format(**kwargs)
+
+        print(formatted_string)
+        return formatted_string
