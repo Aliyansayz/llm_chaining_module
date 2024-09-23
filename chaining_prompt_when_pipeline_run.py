@@ -6,7 +6,7 @@ chaining_prompt_when_pipeline_run without using Library
 prompt = "Generate movies similar to {movie} "
 llm = "whatever"
 pipeline = QueryPipeline(chain=[prompt, llm])
-response = pipeline.run(movie= "World War Z")
+response = pipeline.run(movie= "World War Z") # Just at the time of running pipeline we chain our data
 
 print(response)
 
